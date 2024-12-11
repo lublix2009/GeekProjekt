@@ -5,8 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class LevelManger : MonoBehaviour
 {
-  public void LoadLevel(int liczba)
+  public void LoadLevel(int id)
     {
-        SceneManager.LoadScene(liczba);
+        SceneManager.LoadScene(id);
     }
 }

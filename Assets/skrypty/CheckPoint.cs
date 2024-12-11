@@ -4,15 +4,20 @@ using UnityEngine;
 
 public class CheckPoint : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public Transform PlayerTransform;
+    public Vector3 SaveCheckPointTransform;
+    public void WróæNaCheckPoint()
     {
-        
+        PlayerTransform.position = SaveCheckPointTransform;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void OnTriggerStay2D(Collider2D collision)
     {
-        
+        if (collision.CompareTag("CheckPoint"))
+        {
+         SaveCheckPointTransform = collision.transform.position;
+        }
+       
+
     }
 }

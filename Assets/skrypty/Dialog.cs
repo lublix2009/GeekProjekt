@@ -7,6 +7,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using UnityEditor;
 
+
 public class Dialog : MonoBehaviour
 {
 
@@ -15,10 +16,11 @@ public class Dialog : MonoBehaviour
     public GameObject PanelDialogu;
     public TextMeshProUGUI CharacterName;
     public Image CharacterAvatar;
+    public Button Dalejbtn;
 
     [Header("Treœci Dialogu")]
-    [TextArea(3, 10)]
-    public List<string> LinieDialogu;  
+    
+    public List<LiniaDialogu> LinieDialogu;  
     private int AktualnaLinia = 0;  
 
     [Header("Ustawienia")]
@@ -28,7 +30,8 @@ public class Dialog : MonoBehaviour
 
     CinemachineFramingTransposer framingtransposer;
     private bool CzyPiszê = false;      
-    private Coroutine Obs³ugaAnimacjiTextu;  
+    private Coroutine Obs³ugaAnimacjiTextu;
+    public Rigidbody2D PlayerRb;
 
     void Start()
     {
@@ -41,26 +44,20 @@ public class Dialog : MonoBehaviour
 
     public void StartDialog()
     {
-        playermovment.enabled = false;
-        PanelDialogu.SetActive(true); 
-        AktualnaLinia = 0;         
-        ShowNextLine();
+        RozpocznijOdWybranejLini(0);
     }
 
     public void ShowNextLine()
     {
-        if (CzyPiszê)
-        {
-            StopCoroutine(Obs³ugaAnimacjiTextu);
-            TextDialogu.text = LinieDialogu[AktualnaLinia];
-            CzyPiszê = false;
-            return;
-        }
-
         // PrzejdŸ do nastêpnej linii lub zakoñcz dialog
         if (AktualnaLinia < LinieDialogu.Count)
         {
-            Obs³ugaAnimacjiTextu = StartCoroutine(PiszText(LinieDialogu[AktualnaLinia]));
+             var DaneDialogu = LinieDialogu[AktualnaLinia];
+
+            CharacterName.text = DaneDialogu.CharacterName;
+            CharacterAvatar.sprite = DaneDialogu.CharacterIcon;
+
+            Obs³ugaAnimacjiTextu = StartCoroutine(PiszText(DaneDialogu.DialogText));
             AktualnaLinia++;
         }
         else
@@ -71,8 +68,11 @@ public class Dialog : MonoBehaviour
 
     private IEnumerator PiszText(string line)
     {
+        
         CzyPiszê = true;
-        TextDialogu.text = ""; // Wyczyœæ tekst
+        TextDialogu.text = "";// Wyczyœæ tekst
+        Dalejbtn.interactable = false;
+
 
         foreach (char letter in line.ToCharArray())
         {
@@ -81,13 +81,24 @@ public class Dialog : MonoBehaviour
         }
 
         CzyPiszê = false;
+        Dalejbtn.interactable = true;
+    }
+
+    public void RozpocznijOdWybranejLini(int startLine)
+    {
+        playermovment.enabled = false;
+        PlayerRb.velocity = new Vector2(0, 0);
+        framingtransposer.m_ScreenY = 0.5f;
+        PanelDialogu.SetActive(true);
+        AktualnaLinia = startLine;
+        ShowNextLine();
     }
 
     public void EndDialogue()
     {
         PanelDialogu.SetActive(false);
         playermovment.enabled = true;
-        framingtransposer.m_ScreenY = 0.5f;
+        framingtransposer.m_ScreenY = 0.8f;
 
     }
 
@@ -98,6 +109,6 @@ public class LiniaDialogu
 {
     public string CharacterName;
     public Sprite CharacterIcon;
-    public string DialogText;
+    [TextArea(3,10)]public string DialogText;
 }
 
